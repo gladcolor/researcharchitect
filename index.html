@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Architect — Autonomous Research Design</title>
+    <meta name="description" content="Research Architect builds AI systems that design research, not just execute it. Structuring the upstream decisions that determine what science can discover.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a28;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.15);
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --border: #1e1e2e;
+            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+            --gradient-2: linear-gradient(135deg, #06b6d4, #6366f1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        .btn-nav {
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white !important;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn-nav:hover { opacity: 0.85; }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            font-weight: 500;
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            max-width: 900px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .gradient {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 640px;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            background: var(--gradient-1);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* ── SECTIONS ── */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            font-weight: 300;
+            margin-bottom: 3rem;
+        }
+
+        /* ── PROBLEM ── */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .problem-card:hover {
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+
+        .problem-card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .problem-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .problem-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* ── VISION ── */
+        .vision-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .vision-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .vision-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .vision-visual {
+            position: relative;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .vision-visual::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 60%);
+        }
+
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .pipeline-step .num {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .pipeline-arrow {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        /* ── STATS ── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 4rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            margin: 4rem auto;
+            max-width: 1200px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat .label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ── USE CASES ── */
+        .usecases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .usecase {
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: border-color 0.3s;
+        }
+
+        .usecase:hover { border-color: var(--accent); }
+
+        .usecase .domain {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-light);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .usecase h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .usecase p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── TEAM ── */
+        .team-intro {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .affiliation-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .affiliation-list li {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ── CTA ── */
+        .cta-section {
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .vision-block { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: 1fr; gap: 2rem; }
+            section { padding: 4rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">Research Architect</div>
+    <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#vision">Vision</a>
+        <a href="#domains">Domains</a>
+        <a href="#team">Team</a>
+        <a href="mailto:huan.ning@emory.edu" class="btn-nav">Contact Us</a>
+    </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+    <div class="hero-badge">Autonomous Research Design</div>
+    <h1>AI that designs research,<br><span class="gradient">not just executes it.</span></h1>
+    <p>Research Architect builds AI systems that structure the upstream decisions determining what science can discover — turning months of research design into hours.</p>
+    <div class="hero-cta">
+        <a href="mailto:huan.ning@emory.edu" class="btn-primary">Get in Touch →</a>
+        <a href="#vision" class="btn-secondary">Learn More</a>
+    </div>
+</section>
+
+<!-- ══ PROBLEM ══ -->
+<section id="problem">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">AI automates analysis.<br>But who designs the study?</h2>
+    <p class="section-subtitle">Today's AI tools can run experiments, train models, and crunch data. Yet the most consequential decisions happen before any analysis begins.</p>
+
+    <div class="problem-grid">
+        <div class="problem-card">
+            <div class="icon">🔍</div>
+            <h3>Mis-specified models can't be rescued</h3>
+            <p>No statistical method can fix a study that asks the wrong question or misses a critical confounder. Design errors are permanent — they determine what a study <em>can</em> discover.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">🧠</div>
+            <h3>Expertise is siloed</h3>
+            <p>Modern research problems span disciplines. No individual researcher commands the breadth needed to identify every relevant causal mechanism across domains.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">⏳</div>
+            <h3>Design is slow and implicit</h3>
+            <p>Researchers spend months on literature review and design decisions that are rarely documented — making studies hard to audit, reproduce, or improve.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ VISION ══ -->
+<section id="vision">
+    <div class="section-label">Our Vision</div>
+    <h2 class="section-title">An AI collaborator for<br>the hardest part of science</h2>
+    <p class="section-subtitle">We are building systems where AI provides cross-disciplinary breadth and humans provide contextual depth — together producing research designs that neither could achieve alone.</p>
+
+    <div class="vision-block">
+        <div class="vision-text">
+            <h3>From question to testable design, structured and transparent</h3>
+            <p>Research Architect helps scientists move from a vague research question to a rigorous, auditable research design. The AI surfaces causal mechanisms across disciplines; the researcher refines them with domain knowledge. Every decision — what to include, what to exclude, and <em>why</em> — is documented.</p>
+            <p>The result: studies that know what they can measure, what they can't, and what roads were deliberately not taken. Science that is honest about its own boundaries.</p>
+        </div>
+        <div class="vision-visual">
+            <div class="pipeline">
+                <div class="pipeline-step">
+                    <span class="num">1</span>
+                    Research question — broad, cross-domain exploration
+                </div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step">
+                    <span class="num">2</span>
+                    Causal architecture — AI-generated, human-refined
+                </div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step">
+                    <span class="num">3</span>
+                    Scope assessment — what is detectable in your study
+                </div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step">
+                    <span class="num">4</span>
+                    Data coverage — what is measurable with your data
+                </div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step">
+                    <span class="num">5</span>
+                    Uncertainty-aware hypotheses — testable, honest, auditable
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<div class="stats">
+    <div class="stat">
+        <div class="number">10×</div>
+        <div class="label">Faster research design iteration</div>
+    </div>
+    <div class="stat">
+        <div class="number">Cross-domain</div>
+        <div class="label">AI breadth no single expert can match</div>
+    </div>
+    <div class="stat">
+        <div class="number">Auditable</div>
+        <div class="label">Every design decision documented</div>
+    </div>
+</div>
+
+<!-- ══ DOMAINS ══ -->
+<section id="domains">
+    <div class="section-label">Application Domains</div>
+    <h2 class="section-title">Research design, across every field</h2>
+    <p class="section-subtitle">Wherever scientists need to design studies — from epidemiology to climate science — Research Architect accelerates and structures the process.</p>
+
+    <div class="usecases">
+        <div class="usecase">
+            <div class="domain">Public Health</div>
+            <h3>Disease vector ecology</h3>
+            <p>Design studies that capture the full causal chain from environmental conditions to disease transmission, surfacing overlooked confounders.</p>
+        </div>
+        <div class="usecase">
+            <div class="domain">Environmental Science</div>
+            <h3>Climate impact assessment</h3>
+            <p>Structure research designs that span atmospheric science, hydrology, ecology, and human systems — disciplines that rarely talk to each other.</p>
+        </div>
+        <div class="usecase">
+            <div class="domain">Urban Systems</div>
+            <h3>Infrastructure resilience</h3>
+            <p>Map causal mechanisms linking urban development, natural hazards, and community vulnerability across spatial and temporal scales.</p>
+        </div>
+        <div class="usecase">
+            <div class="domain">Social Science</div>
+            <h3>Policy evaluation</h3>
+            <p>Design observational studies with explicit causal assumptions, making the gap between what is measured and what is claimed transparent.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ TEAM ══ -->
+<section id="team">
+    <div class="section-label">Team</div>
+    <h2 class="section-title">Built by researchers, for researchers</h2>
+    <p class="team-intro">Research Architect is led by scientists with deep expertise in GeoAI, causal inference, autonomous systems, and human-AI collaboration. Our team has published foundational work on autonomous geographic information systems and AI-augmented research methodology.</p>
+
+    <ul class="affiliation-list">
+        <li>Emory University</li>
+    </ul>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-section">
+    <h2>The future of science is<br><span class="gradient">designed by AI, guided by humans.</span></h2>
+    <p>We're looking for partners and investors who share our vision of making research design faster, more rigorous, and more honest.</p>
+    <a href="mailto:huan.ning@emory.edu" class="btn-primary">Partner with Us →</a>
+</section>
+
+<footer>
+    <p>&copy; 2025 Research Architect &middot; researcharchitect.ai</p>
+</footer>
+
+</body>
+</html>
