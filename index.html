@@ -3,656 +3,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Architect — Autonomous Research Design</title>
-    <meta name="description" content="Research Architect builds AI systems that design research, not just execute it. Structuring the upstream decisions that determine what science can discover.">
+    <title>ResearchArchitect — Design research, not just run it</title>
+    <meta name="description" content="ResearchArchitect turns a research question into an auditable influence network: what your study can detect, what your data can measure, and what was deliberately left out.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Tokens mirror the app's base.html so this page and the workspace read
+           as one product. Keep them in sync when the app's palette changes. */
         :root {
-            --bg: #0a0a0f;
-            --bg-card: #12121a;
-            --bg-card-hover: #1a1a28;
-            --accent: #6366f1;
-            --accent-light: #818cf8;
-            --accent-glow: rgba(99, 102, 241, 0.15);
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-            --border: #1e1e2e;
-            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
-            --gradient-2: linear-gradient(135deg, #06b6d4, #6366f1);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-soft: #eef2ff;
+            --accent: #8b5cf6;
+            --bg-soft: #f6f7fb;
+            --bg-gradient: linear-gradient(180deg, #f6f7fb 0%, #eef1f7 100%);
+            --text: #0f172a;
+            --text-mute: #6b7280;
+            --border-soft: #e5e7eb;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.05);
+            --shadow-md: 0 4px 14px rgba(15,23,42,0.07), 0 2px 6px rgba(15,23,42,0.05);
+            --shadow-lg: 0 12px 32px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.06);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text);
-            line-height: 1.7;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            background-image:
+                radial-gradient(circle at 10% 0%, rgba(99,102,241,0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 100%, rgba(139,92,246,0.05) 0%, transparent 45%),
+                var(--bg-gradient);
+            line-height: 1.6;
+            letter-spacing: -0.005em;
+            -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
+        a { color: var(--primary); }
+
         /* ── NAV ── */
         nav {
-            position: fixed;
+            position: sticky;
             top: 0;
-            width: 100%;
             z-index: 100;
-            padding: 1.2rem 2rem;
+            padding: 0.85rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(20px);
-            background: rgba(10, 10, 15, 0.8);
-            border-bottom: 1px solid var(--border);
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-soft);
         }
-
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.25rem;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
+        .brand {
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.025em;
+            text-decoration: none;
+            color: var(--text);
+            white-space: nowrap;
         }
+        .brand .dot { color: var(--primary); }
 
-        .nav-links { display: flex; gap: 2rem; align-items: center; }
-
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
         .nav-links a {
-            color: var(--text-muted);
+            color: #374151;
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
             transition: color 0.2s;
         }
+        .nav-links a:hover { color: var(--primary); }
 
-        .nav-links a:hover { color: var(--text); }
-
-        .btn-nav {
-            padding: 0.5rem 1.2rem;
-            border-radius: 8px;
-            background: var(--accent);
-            color: white !important;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border-radius: 12px;
             font-weight: 600;
-            transition: opacity 0.2s;
+            text-decoration: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
+            white-space: nowrap;
         }
-
-        .btn-nav:hover { opacity: 0.85; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(99,102,241,0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.32);
+            color: #fff;
+        }
+        .btn-outline {
+            background: #fff;
+            color: var(--text);
+            border-color: var(--border-soft);
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-sm { padding: 0.45rem 1rem; font-size: 0.88rem; }
+        .btn-lg { padding: 0.8rem 1.6rem; font-size: 1rem; }
 
         /* ── HERO ── */
         .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(99,102,241,0.08), transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(139,92,246,0.07), transparent 55%),
+                linear-gradient(180deg, #ffffff 0%, var(--bg-soft) 100%);
+            padding: 5.5rem 1.5rem 4.5rem;
             text-align: center;
-            padding: 8rem 2rem 4rem;
             position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-soft);
         }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.4rem 1rem;
-            border-radius: 100px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            font-size: 0.8rem;
-            color: var(--accent-light);
-            font-weight: 500;
-            margin-bottom: 2rem;
-            letter-spacing: 0.05em;
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: #fff;
+            box-shadow: var(--shadow-sm);
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
         }
-
         .hero h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
+            font-size: clamp(2.4rem, 5vw, 3.75rem);
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            line-height: 1.05;
+            margin-bottom: 1.1rem;
             max-width: 900px;
-            margin-bottom: 1.5rem;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        .hero h1 .gradient {
-            background: var(--gradient-1);
+        .gradient-text {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            color: transparent;
+            animation: gradient-shift 8s ease-in-out infinite;
         }
-
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            max-width: 640px;
-            margin-bottom: 2.5rem;
-            font-weight: 300;
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
         }
-
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
+        @media (prefers-reduced-motion: reduce) {
+            .gradient-text { animation: none; }
+            .btn:hover, .card:hover, .sample:hover { transform: none; }
         }
-
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.85rem 2rem;
-            border-radius: 10px;
-            background: var(--gradient-1);
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: none;
-            cursor: pointer;
+        .hero .lead {
+            font-size: 1.18rem;
+            color: var(--text-mute);
+            max-width: 660px;
+            margin: 0 auto 2rem;
+            line-height: 1.55;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.85rem 2rem;
-            border-radius: 10px;
-            background: transparent;
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1rem;
-            border: 1px solid var(--border);
-            transition: border-color 0.2s, background 0.2s;
-            cursor: pointer;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            background: var(--accent-glow);
-        }
+        .hero .cta { display: inline-flex; gap: 0.85rem; flex-wrap: wrap; justify-content: center; }
+        .hero .note { margin-top: 1.1rem; font-size: 0.85rem; color: var(--text-mute); }
 
         /* ── SECTIONS ── */
-        section {
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
+        section { padding: 4.5rem 1.5rem; }
+        .container { max-width: 1100px; margin: 0 auto; }
         .section-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--accent-light);
-            font-weight: 600;
-            margin-bottom: 0.75rem;
+            letter-spacing: 0.12em;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            text-align: center;
         }
-
-        .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
+        h2 {
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
             font-weight: 700;
             letter-spacing: -0.02em;
-            margin-bottom: 1rem;
+            text-align: center;
+            margin-bottom: 0.6rem;
+        }
+        .sub {
+            text-align: center;
+            color: var(--text-mute);
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
         }
 
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            font-weight: 300;
-            margin-bottom: 3rem;
-        }
+        .grid { display: grid; gap: 1rem; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
-        /* ── PROBLEM ── */
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .card {
+            background: #fff;
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            padding: 1.6rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, border-color 0.2s;
         }
-
-        .problem-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: border-color 0.3s, background 0.3s;
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(99,102,241,0.30);
         }
+        .card .icon { font-size: 1.6rem; margin-bottom: 0.7rem; }
+        .card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+        .card p { font-size: 0.92rem; color: var(--text-mute); line-height: 1.6; }
 
-        .problem-card:hover {
-            border-color: var(--accent);
-            background: var(--bg-card-hover);
-        }
-
-        .problem-card .icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .problem-card h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .problem-card p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            line-height: 1.65;
-        }
-
-        /* ── VISION ── */
-        .vision-block {
+        /* ── PIPELINE ── */
+        .pipeline-wrap {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: 3rem;
             align-items: center;
-            margin-top: 2rem;
         }
-
-        .vision-text h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .vision-text p {
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .vision-visual {
-            position: relative;
-            padding: 3rem 2rem;
-            border-radius: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-
-        .vision-visual::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 60%);
-        }
-
+        .pipeline-text h3 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.8rem; letter-spacing: -0.015em; }
+        .pipeline-text p { color: var(--text-mute); margin-bottom: 1.1rem; }
         .pipeline {
+            background: #fff;
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 1.6rem;
+            box-shadow: var(--shadow-md);
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
-            position: relative;
-            z-index: 1;
+            gap: 0.5rem;
         }
-
         .pipeline-step {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.8rem 1rem;
+            gap: 0.85rem;
+            padding: 0.7rem 0.85rem;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
+            background: var(--bg-soft);
+            border: 1px solid var(--border-soft);
+            font-size: 0.88rem;
             font-weight: 500;
         }
-
         .pipeline-step .num {
-            width: 28px;
-            height: 28px;
+            width: 26px; height: 26px;
             border-radius: 8px;
-            background: var(--accent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 700;
             flex-shrink: 0;
         }
+        .pipeline-arrow { text-align: center; color: #cbd5e1; font-size: 0.75rem; line-height: 1; }
 
-        .pipeline-arrow {
-            text-align: center;
-            color: var(--text-dim);
-            font-size: 0.8rem;
-        }
-
-        /* ── STATS ── */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            padding: 4rem 0;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            margin: 4rem auto;
-            max-width: 1200px;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat .number {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat .label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.25rem;
-        }
-
-        /* ── USE CASES ── */
-        .usecases {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .usecase {
-            padding: 2rem;
-            border-radius: 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            transition: border-color 0.3s;
-        }
-
-        .usecase:hover { border-color: var(--accent); }
-
-        .usecase .domain {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--accent-light);
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-
-        .usecase h3 {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .usecase p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        /* ── TEAM ── */
-        .team-intro {
-            color: var(--text-muted);
-            max-width: 700px;
-            margin-bottom: 2rem;
-            line-height: 1.8;
-        }
-
-        .affiliation-list {
+        /* ── SAMPLES ── */
+        .samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .sample {
+            background: #fff;
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
             display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            list-style: none;
+            flex-direction: column;
+            transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
         }
-
-        .affiliation-list li {
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 500;
+        .sample:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99,102,241,0.10);
+            color: inherit;
         }
+        .sample .preview {
+            height: 108px;
+            background: linear-gradient(135deg, #ede9fe 0%, #c7d2fe 50%, #fce7f3 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .sample .preview svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.85; }
+        .sample .stats {
+            position: absolute; bottom: 0.5rem; left: 0.75rem;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 999px;
+            padding: 0.15rem 0.625rem;
+            font-size: 0.72rem; font-weight: 600;
+            color: var(--primary);
+        }
+        .sample .body { padding: 1rem 1.25rem 1.15rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .sample .domain {
+            font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.09em;
+            color: var(--text-mute); font-weight: 700; margin-bottom: 0.4rem;
+        }
+        .sample .title { font-weight: 600; font-size: 0.95rem; line-height: 1.35; margin-bottom: 0.45rem; }
+        .sample .blurb { font-size: 0.84rem; color: var(--text-mute); line-height: 1.55; }
+        .sample .open { color: var(--primary); font-weight: 600; font-size: 0.84rem; margin-top: auto; padding-top: 0.8rem; }
 
         /* ── CTA ── */
         .cta-section {
             text-align: center;
-            padding: 6rem 2rem;
-            position: relative;
+            background:
+                radial-gradient(ellipse at 50% 100%, rgba(99,102,241,0.10), transparent 60%),
+                linear-gradient(180deg, var(--bg-soft) 0%, #ffffff 100%);
+            border-top: 1px solid var(--border-soft);
+        }
+        .cta-section p { color: var(--text-mute); max-width: 540px; margin: 0 auto 1.8rem; }
+
+        .affiliations { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; list-style: none; }
+        .affiliations li {
+            padding: 0.55rem 1.1rem;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-sm);
+            font-size: 0.86rem;
+            color: var(--text-mute);
+            font-weight: 500;
         }
 
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 400px;
-            background: radial-gradient(circle, var(--accent-glow), transparent 70%);
-            pointer-events: none;
-        }
-
-        .cta-section h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            color: var(--text-muted);
-            max-width: 500px;
-            margin: 0 auto 2rem;
-        }
-
-        /* ── FOOTER ── */
         footer {
-            padding: 2rem;
+            padding: 2rem 1.5rem;
             text-align: center;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.8rem;
+            border-top: 1px solid var(--border-soft);
+            color: var(--text-mute);
+            font-size: 0.82rem;
+            background: #fff;
         }
+        footer a { color: var(--text-mute); text-decoration: none; }
+        footer a:hover { color: var(--primary); }
+        .footer-links { display: flex; gap: 1.25rem; justify-content: center; margin-bottom: 0.75rem; flex-wrap: wrap; }
 
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .vision-block { grid-template-columns: 1fr; }
-            .stats { grid-template-columns: 1fr; gap: 2rem; }
-            section { padding: 4rem 1.5rem; }
+        @media (max-width: 820px) {
+            .pipeline-wrap { grid-template-columns: 1fr; gap: 2rem; }
+        }
+        @media (max-width: 640px) {
+            .nav-links a:not(.btn) { display: none; }
+            section { padding: 3rem 1.25rem; }
+            .hero { padding: 3.5rem 1.25rem 3rem; }
         }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">Research Architect</div>
+    <a href="#top" class="brand">Research<span class="dot">Architect</span></a>
     <div class="nav-links">
         <a href="#problem">Problem</a>
-        <a href="#vision">Vision</a>
-        <a href="#domains">Domains</a>
-        <a href="#team">Team</a>
-        <a href="mailto:huan.ning@emory.edu" class="btn-nav">Contact Us</a>
+        <a href="#approach">Approach</a>
+        <a href="#samples">Samples</a>
+        <a href="https://app.researcharchitect.ai/guide">Guide</a>
+        <a href="https://app.researcharchitect.ai/" class="btn btn-primary btn-sm">Open the App →</a>
     </div>
 </nav>
 
 <!-- ══ HERO ══ -->
-<section class="hero">
-    <div class="hero-badge">Autonomous Research Design</div>
-    <h1>AI that designs research,<br><span class="gradient">not just executes it.</span></h1>
-    <p>Research Architect builds AI systems that structure the upstream decisions determining what science can discover — turning months of research design into hours.</p>
-    <div class="hero-cta">
-        <a href="mailto:huan.ning@emory.edu" class="btn-primary">Get in Touch →</a>
-        <a href="#vision" class="btn-secondary">Learn More</a>
+<section class="hero" id="top">
+    <div class="hero-badge">Research design, made explicit</div>
+    <h1>AI that helps you design research,<br><span class="gradient-text">not just run it.</span></h1>
+    <p class="lead">
+        Turn a research question into an influence network you can argue with — then find out
+        what your study can actually detect, what your data can actually measure, and what got
+        left out along the way.
+    </p>
+    <div class="cta">
+        <a href="https://app.researcharchitect.ai/" class="btn btn-primary btn-lg">Open the App →</a>
+        <a href="#samples" class="btn btn-outline btn-lg">Browse sample studies</a>
     </div>
+    <p class="note">Free to try · <a href="https://app.researcharchitect.ai/guide">Read the 5-minute guide</a></p>
 </section>
 
 <!-- ══ PROBLEM ══ -->
 <section id="problem">
-    <div class="section-label">The Problem</div>
-    <h2 class="section-title">AI automates analysis.<br>But who designs the study?</h2>
-    <p class="section-subtitle">Today's AI tools can run experiments, train models, and crunch data. Yet the most consequential decisions happen before any analysis begins.</p>
+    <div class="container">
+        <div class="section-label">The Problem</div>
+        <h2>AI automates the analysis.<br>But who designs the study?</h2>
+        <p class="sub">
+            The decisions that determine what a study can discover are made before any analysis
+            begins — and they are usually made implicitly.
+        </p>
 
-    <div class="problem-grid">
-        <div class="problem-card">
-            <div class="icon">🔍</div>
-            <h3>Mis-specified models can't be rescued</h3>
-            <p>No statistical method can fix a study that asks the wrong question or misses a critical confounder. Design errors are permanent — they determine what a study <em>can</em> discover.</p>
-        </div>
-        <div class="problem-card">
-            <div class="icon">🧠</div>
-            <h3>Expertise is siloed</h3>
-            <p>Modern research problems span disciplines. No individual researcher commands the breadth needed to identify every relevant causal mechanism across domains.</p>
-        </div>
-        <div class="problem-card">
-            <div class="icon">⏳</div>
-            <h3>Design is slow and implicit</h3>
-            <p>Researchers spend months on literature review and design decisions that are rarely documented — making studies hard to audit, reproduce, or improve.</p>
-        </div>
-    </div>
-</section>
-
-<!-- ══ VISION ══ -->
-<section id="vision">
-    <div class="section-label">Our Vision</div>
-    <h2 class="section-title">An AI collaborator for<br>the hardest part of science</h2>
-    <p class="section-subtitle">We are building systems where AI provides cross-disciplinary breadth and humans provide contextual depth — together producing research designs that neither could achieve alone.</p>
-
-    <div class="vision-block">
-        <div class="vision-text">
-            <h3>From question to testable design, structured and transparent</h3>
-            <p>Research Architect helps scientists move from a vague research question to a rigorous, auditable research design. The AI surfaces causal mechanisms across disciplines; the researcher refines them with domain knowledge. Every decision — what to include, what to exclude, and <em>why</em> — is documented.</p>
-            <p>The result: studies that know what they can measure, what they can't, and what roads were deliberately not taken. Science that is honest about its own boundaries.</p>
-        </div>
-        <div class="vision-visual">
-            <div class="pipeline">
-                <div class="pipeline-step">
-                    <span class="num">1</span>
-                    Research question — broad, cross-domain exploration
-                </div>
-                <div class="pipeline-arrow">↓</div>
-                <div class="pipeline-step">
-                    <span class="num">2</span>
-                    Causal architecture — AI-generated, human-refined
-                </div>
-                <div class="pipeline-arrow">↓</div>
-                <div class="pipeline-step">
-                    <span class="num">3</span>
-                    Scope assessment — what is detectable in your study
-                </div>
-                <div class="pipeline-arrow">↓</div>
-                <div class="pipeline-step">
-                    <span class="num">4</span>
-                    Data coverage — what is measurable with your data
-                </div>
-                <div class="pipeline-arrow">↓</div>
-                <div class="pipeline-step">
-                    <span class="num">5</span>
-                    Uncertainty-aware hypotheses — testable, honest, auditable
-                </div>
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="icon">🔍</div>
+                <h3>A mis-specified model can't be rescued</h3>
+                <p>No statistical method fixes a study that asked the wrong question or missed a confounder. Design errors are permanent — they bound what the study <em>can</em> find.</p>
+            </div>
+            <div class="card">
+                <div class="icon">🧠</div>
+                <h3>Expertise is siloed</h3>
+                <p>Real problems span disciplines. No individual commands the breadth to name every relevant mechanism across entomology, hydrology, remote sensing and epidemiology at once.</p>
+            </div>
+            <div class="card">
+                <div class="icon">📋</div>
+                <h3>Design decisions go unrecorded</h3>
+                <p>Months of literature review and scoping collapse into a methods paragraph. What was considered and rejected — the roads not taken — is almost never written down.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ══ STATS ══ -->
-<div class="stats">
-    <div class="stat">
-        <div class="number">10×</div>
-        <div class="label">Faster research design iteration</div>
-    </div>
-    <div class="stat">
-        <div class="number">Cross-domain</div>
-        <div class="label">AI breadth no single expert can match</div>
-    </div>
-    <div class="stat">
-        <div class="number">Auditable</div>
-        <div class="label">Every design decision documented</div>
-    </div>
-</div>
+<!-- ══ APPROACH ══ -->
+<section id="approach">
+    <div class="container">
+        <div class="section-label">The Approach</div>
+        <h2>Three projections, each one lossy<br>— and each one recorded</h2>
+        <p class="sub">
+            A research design is a series of narrowings from the world to what you can measure.
+            ResearchArchitect makes each narrowing explicit instead of silent.
+        </p>
 
-<!-- ══ DOMAINS ══ -->
-<section id="domains">
-    <div class="section-label">Application Domains</div>
-    <h2 class="section-title">Research design, across every field</h2>
-    <p class="section-subtitle">Wherever scientists need to design studies — from epidemiology to climate science — Research Architect accelerates and structures the process.</p>
+        <div class="pipeline-wrap">
+            <div class="pipeline-text">
+                <h3>From a question to a design you can defend</h3>
+                <p>
+                    You supply the research question, your data, and the scope of the study. The
+                    system proposes the influence network; you correct it. Every variable, every
+                    link, and every judgement about what falls inside or outside the study is
+                    something you can point at, disagree with, and change.
+                </p>
+                <p>
+                    What you end up with is a design that knows its own boundaries: which
+                    relationships matter most, which are observable within your window, and which
+                    were deliberately set aside.
+                </p>
+                <a href="https://app.researcharchitect.ai/guide" class="btn btn-outline btn-sm">How it works, step by step →</a>
+            </div>
+            <div class="pipeline">
+                <div class="pipeline-step"><span class="num">1</span> Research question — broad, cross-domain exploration</div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step"><span class="num">2</span> Influence network — proposed, then refined by you</div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step"><span class="num">3</span> Edge importance — necessary, driving, or modifying</div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step"><span class="num">4</span> Scope — what can vary in your window and extent</div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step"><span class="num">5</span> Data coverage — what your data can actually measure</div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="pipeline-step"><span class="num">6</span> Hypotheses — testable, and honest about their limits</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <div class="usecases">
-        <div class="usecase">
-            <div class="domain">Public Health</div>
-            <h3>Disease vector ecology</h3>
-            <p>Design studies that capture the full causal chain from environmental conditions to disease transmission, surfacing overlooked confounders.</p>
-        </div>
-        <div class="usecase">
-            <div class="domain">Environmental Science</div>
-            <h3>Climate impact assessment</h3>
-            <p>Structure research designs that span atmospheric science, hydrology, ecology, and human systems — disciplines that rarely talk to each other.</p>
-        </div>
-        <div class="usecase">
-            <div class="domain">Urban Systems</div>
-            <h3>Infrastructure resilience</h3>
-            <p>Map causal mechanisms linking urban development, natural hazards, and community vulnerability across spatial and temporal scales.</p>
-        </div>
-        <div class="usecase">
-            <div class="domain">Social Science</div>
-            <h3>Policy evaluation</h3>
-            <p>Design observational studies with explicit causal assumptions, making the gap between what is measured and what is claimed transparent.</p>
+<!-- ══ SAMPLES ══ -->
+<section id="samples">
+    <div class="container">
+        <div class="section-label">Sample studies</div>
+        <h2>Open a real study in the workspace</h2>
+        <p class="sub">
+            These are not screenshots. Each one loads into the app itself, with the same tools and
+            the same symbology — refine it, re-run an analysis, or fork it into a study of your own.
+        </p>
+
+        <div class="samples">
+            <!-- Node/edge counts are read from the published GraphML files. -->
+            <a class="sample" href="https://app.researcharchitect.ai/app-v2/?graph=Dry%20season%20Anopheles%20stephensi%20larval%20productivity%20factors">
+                <div class="preview">
+                    <svg viewBox="0 0 200 110" preserveAspectRatio="none" aria-hidden="true">
+                        <g stroke="#6366f1" stroke-width="1.2" fill="none" opacity="0.55">
+                            <path d="M 30 34 Q 80 47 130 42"/><path d="M 60 77 Q 110 57 170 67"/>
+                            <path d="M 40 57 L 120 68"/><path d="M 100 49 L 150 73"/>
+                        </g>
+                        <g fill="#6366f1">
+                            <circle cx="30" cy="34" r="4"/><circle cx="130" cy="42" r="5"/>
+                            <circle cx="60" cy="77" r="4"/><circle cx="170" cy="67" r="4"/>
+                            <circle cx="100" cy="49" r="3"/><circle cx="120" cy="68" r="3"/>
+                            <circle cx="40" cy="57" r="3"/><circle cx="150" cy="73" r="4"/>
+                        </g>
+                    </svg>
+                    <div class="stats">34 nodes · 76 edges</div>
+                </div>
+                <div class="body">
+                    <div class="domain">Vector ecology</div>
+                    <div class="title">Dry-season <em>Anopheles stephensi</em> larval productivity</div>
+                    <div class="blurb">
+                        An urban malaria vector breeding in construction pits and <em>birka</em> cisterns.
+                        The most complete sample: scope assessed against a dry-season window, data
+                        coverage rated against 0.3&nbsp;m imagery and site surveys, and 15 generated
+                        hypotheses.
+                    </div>
+                    <div class="open">Open in the workspace →</div>
+                </div>
+            </a>
+
+            <a class="sample" href="https://app.researcharchitect.ai/app-v2/?graph=Carlton%20County%20housing%20labor%20factors">
+                <div class="preview">
+                    <svg viewBox="0 0 200 110" preserveAspectRatio="none" aria-hidden="true">
+                        <g stroke="#8b5cf6" stroke-width="1.2" fill="none" opacity="0.55">
+                            <path d="M 25 30 Q 85 55 135 35"/><path d="M 55 80 Q 105 45 175 60"/>
+                            <path d="M 45 60 L 125 78"/><path d="M 95 40 L 155 85"/>
+                        </g>
+                        <g fill="#8b5cf6">
+                            <circle cx="25" cy="30" r="4"/><circle cx="135" cy="35" r="5"/>
+                            <circle cx="55" cy="80" r="4"/><circle cx="175" cy="60" r="4"/>
+                            <circle cx="95" cy="40" r="3"/><circle cx="125" cy="78" r="3"/>
+                            <circle cx="45" cy="60" r="3"/><circle cx="155" cy="85" r="4"/>
+                        </g>
+                    </svg>
+                    <div class="stats">51 nodes · 121 edges</div>
+                </div>
+                <div class="body">
+                    <div class="domain">Regional economics</div>
+                    <div class="title">Carlton County housing and labor</div>
+                    <div class="blurb">
+                        The largest of the samples, grown from 20 nodes to 51 through refinement.
+                        Housing supply, second-home demand and construction labour, with genuine
+                        feedback loops — price feeding affordability feeding demand.
+                    </div>
+                    <div class="open">Open in the workspace →</div>
+                </div>
+            </a>
+
+            <a class="sample" href="https://app.researcharchitect.ai/app-v2/?graph=Zika%20transmission%20factors%20Merida%20Mexico">
+                <div class="preview">
+                    <svg viewBox="0 0 200 110" preserveAspectRatio="none" aria-hidden="true">
+                        <g stroke="#ec4899" stroke-width="1.2" fill="none" opacity="0.5">
+                            <path d="M 32 40 Q 82 40 132 30"/><path d="M 62 72 Q 112 62 172 55"/>
+                            <path d="M 42 52 L 122 72"/><path d="M 102 42 L 152 78"/>
+                        </g>
+                        <g fill="#ec4899">
+                            <circle cx="32" cy="40" r="4"/><circle cx="132" cy="30" r="5"/>
+                            <circle cx="62" cy="72" r="4"/><circle cx="172" cy="55" r="4"/>
+                            <circle cx="102" cy="42" r="3"/><circle cx="122" cy="72" r="3"/>
+                            <circle cx="42" cy="52" r="3"/><circle cx="152" cy="78" r="4"/>
+                        </g>
+                    </svg>
+                    <div class="stats">24 nodes · 30 edges</div>
+                </div>
+                <div class="body">
+                    <div class="domain">Epidemiology</div>
+                    <div class="title">Zika transmission in Mérida, Mexico</div>
+                    <div class="blurb">
+                        Rainfall, temperature and household water storage through larval habitat to
+                        human infection. Includes a literature review attached to the
+                        rainfall&nbsp;→&nbsp;larval habitat link, citing eight sources.
+                    </div>
+                    <div class="open">Open in the workspace →</div>
+                </div>
+            </a>
+
+            <a class="sample" href="https://app.researcharchitect.ai/app-v2/?graph=Aedes%20aegypti%20indoor%20resting%20height%20factors">
+                <div class="preview">
+                    <svg viewBox="0 0 200 110" preserveAspectRatio="none" aria-hidden="true">
+                        <g stroke="#6366f1" stroke-width="1.2" fill="none" opacity="0.5">
+                            <path d="M 28 46 Q 88 36 138 46"/><path d="M 58 68 Q 108 78 168 52"/>
+                            <path d="M 48 56 L 128 62"/><path d="M 98 36 L 148 80"/>
+                        </g>
+                        <g fill="#6366f1">
+                            <circle cx="28" cy="46" r="4"/><circle cx="138" cy="46" r="5"/>
+                            <circle cx="58" cy="68" r="4"/><circle cx="168" cy="52" r="4"/>
+                            <circle cx="98" cy="36" r="3"/><circle cx="128" cy="62" r="3"/>
+                            <circle cx="48" cy="56" r="3"/><circle cx="148" cy="80" r="4"/>
+                        </g>
+                    </svg>
+                    <div class="stats">20 nodes · 30 edges</div>
+                </div>
+                <div class="body">
+                    <div class="domain">Vector ecology</div>
+                    <div class="title"><em>Aedes aegypti</em> indoor resting height</div>
+                    <div class="blurb">
+                        A deliberately narrow question — where inside a house mosquitoes rest, which
+                        determines whether indoor spraying reaches them. Twelve variables bear
+                        directly on the outcome.
+                    </div>
+                    <div class="open">Open in the workspace →</div>
+                </div>
+            </a>
+
+            <a class="sample" href="https://app.researcharchitect.ai/app-v2/?graph=US%20corn%20acreage%20factors">
+                <div class="preview">
+                    <svg viewBox="0 0 200 110" preserveAspectRatio="none" aria-hidden="true">
+                        <g stroke="#0891b2" stroke-width="1.2" fill="none" opacity="0.5">
+                            <path d="M 30 38 Q 90 60 140 38"/><path d="M 60 74 Q 110 50 170 64"/>
+                            <path d="M 44 58 L 124 70"/><path d="M 100 44 L 150 76"/>
+                        </g>
+                        <g fill="#0891b2">
+                            <circle cx="30" cy="38" r="4"/><circle cx="140" cy="38" r="5"/>
+                            <circle cx="60" cy="74" r="4"/><circle cx="170" cy="64" r="4"/>
+                            <circle cx="100" cy="44" r="3"/><circle cx="124" cy="70" r="3"/>
+                            <circle cx="44" cy="58" r="3"/><circle cx="150" cy="76" r="4"/>
+                        </g>
+                    </svg>
+                    <div class="stats">20 nodes · 23 edges</div>
+                </div>
+                <div class="body">
+                    <div class="domain">Agriculture</div>
+                    <div class="title">US corn acreage</div>
+                    <div class="blurb">
+                        Ethanol policy, price and yield expectations, input costs and
+                        prevented-planting risk feeding into one planting decision. The most
+                        compact of the samples, and a useful contrast to the site-level studies.
+                    </div>
+                    <div class="open">Open in the workspace →</div>
+                </div>
+            </a>
         </div>
     </div>
 </section>
 
 <!-- ══ TEAM ══ -->
 <section id="team">
-    <div class="section-label">Team</div>
-    <h2 class="section-title">Built by researchers, for researchers</h2>
-    <p class="team-intro">Research Architect is led by scientists with deep expertise in GeoAI, causal inference, autonomous systems, and human-AI collaboration. Our team has published foundational work on autonomous geographic information systems and AI-augmented research methodology.</p>
-
-    <ul class="affiliation-list">
-        <li>Emory University</li>
-    </ul>
+    <div class="container">
+        <div class="section-label">Who's building it</div>
+        <h2>Built by researchers, for researchers</h2>
+        <p class="sub">
+            ResearchArchitect comes out of work on GeoAI, causal inference and autonomous
+            geographic information systems, and is developed alongside active field studies in
+            vector-borne disease.
+        </p>
+        <ul class="affiliations">
+            <li>Emory University</li>
+            <li>Department of Environmental Sciences</li>
+        </ul>
+    </div>
 </section>
 
 <!-- ══ CTA ══ -->
 <section class="cta-section">
-    <h2>The future of science is<br><span class="gradient">designed by AI, guided by humans.</span></h2>
-    <p>We're looking for partners and investors who share our vision of making research design faster, more rigorous, and more honest.</p>
-    <a href="mailto:huan.ning@emory.edu" class="btn-primary">Partner with Us →</a>
+    <div class="container">
+        <h2>Start with a question you actually have.</h2>
+        <p>
+            Open a sample study to see the shape of it, or begin with your own research question
+            and work outward.
+        </p>
+        <div class="cta" style="display:inline-flex; gap:0.85rem; flex-wrap:wrap; justify-content:center">
+            <a href="https://app.researcharchitect.ai/" class="btn btn-primary btn-lg">Open the App →</a>
+            <a href="mailto:huan.ning@emory.edu" class="btn btn-outline btn-lg">Get in touch</a>
+        </div>
+    </div>
 </section>
 
 <footer>
-    <p>&copy; 2026 Research Architect &middot; researcharchitect.ai</p>
+    <div class="footer-links">
+        <a href="https://app.researcharchitect.ai/">App</a>
+        <a href="https://app.researcharchitect.ai/guide">Guide</a>
+        <a href="https://app.researcharchitect.ai/pricing">Pricing</a>
+        <a href="mailto:huan.ning@emory.edu">Contact</a>
+    </div>
+    <p>&copy; 2026 ResearchArchitect &middot; researcharchitect.ai</p>
 </footer>
 
 </body>
